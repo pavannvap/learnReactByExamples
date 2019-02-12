@@ -1,1 +1,1 @@
-# learnReactByExamples
+# learnReactByPractice
