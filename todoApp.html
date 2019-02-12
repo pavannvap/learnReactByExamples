@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>React Tutl - 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+</head>
+<body>
+
+    <div id="container"></div>
+
+    <script type="text/babel">
+        class MyApp extends React.Component {
+            inputRef = React.createRef()
+            updatingValue = ''
+            state = {
+                todoItem: '',
+                todoItems: ['buy milk', 'buy vegies'],
+                'btn': 'ADD',
+                'error': ''
+            }
+            handleAddTodo = (e) => {
+                debugger;
+                let mergedItems;
+                const curVal = this.state.todoItem;
+                const curItemIndex = this.state.todoItems.indexOf(this.updatingValue);
+
+                if(curVal && curVal !== "" && curVal.trim() !== ""){
+                    this.setState({'error': ''});
+                    
+                    if(this.state.btn === 'UPDATE' && curItemIndex !== -1){//update
+                        this.state.todoItems[curItemIndex] = this.state.todoItem;
+                        this.setState({todoItems : this.state.todoItems, todoItem : '', 'btn': 'ADD'});
+                    }else{ //add
+                        mergedItems = [...this.state.todoItems, this.state.todoItem];
+                        this.setState({todoItems : mergedItems, todoItem : '', 'btn': 'ADD'});
+                    }
+                }else{
+                    this.inputRef.current.focus();
+                    this.setState({'error': 'Please add your todo item'});
+                }    
+            }
+            handleOnChange = (e)=>{
+                const curVal = e.currentTarget.value;
+                this.setState({todoItem: curVal});
+            }
+            handleUpdate = (e)=> {
+                debugger;
+                this.setState({'error': ''});
+                e.stopPropagation();
+                const curItemIndex = parseInt(e.currentTarget.parentElement.getAttribute('data-index'));
+                this.setState({'todoItem': this.state.todoItems[curItemIndex]}, ()=>this.updatingValue = this.inputRef.current.value);
+                this.setState({'btn': 'UPDATE'});
+            }
+            deleteTodo = (e)=> {
+                // const curItem = this.state.todoItem;
+                const items = this.state.todoItems;
+                const curItemIndex = parseInt(e.currentTarget.parentElement.getAttribute('data-index'));
+                items.splice(curItemIndex, 1);
+                this.setState({'todoItems': items});
+            }
+            render(){
+                return (
+                    <div>
+                        <input type="text" ref={this.inputRef} value={this.state.todoItem} onFocus={this.handleOnFocus} onChange={this.handleOnChange} />
+                        <div>{this.state.error}</div>
+                        <button onClick={this.handleAddTodo}>{this.state.btn}</button>
+                        
+                        <RenderItems allItems={this.state.todoItems} inputEle={this.inputRef} handleDelete={this.deleteTodo} handleUpdate={this.handleUpdate}/>
+                    </div>
+                )
+            }
+        }
+
+        function RenderItems(props){
+            debugger;
+            const constructItems = (item, index)=> {
+                return (
+                    <li key={item} data-index={index}>
+                        {item}
+                        <button onClick={props.handleUpdate}>update</button>
+                        <button onClick={props.handleDelete}>delete</button>
+                    </li>       
+                )
+            }
+            
+            const items =  props.allItems;
+            const buildLis = items.map(constructItems);
+            return (
+                <ul>
+                    {buildLis}
+                </ul>  
+            )
+            
+        }
+
+        ReactDOM.render(<MyApp/>, document.getElementById('container'));
+
+    </script>
+</body>
+</html>
