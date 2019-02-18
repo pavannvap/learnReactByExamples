@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>React Tutl - 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+    <style type="text/css">
+        .app{
+            display: flex;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        .app .column {
+            flex: auto;
+            text-align: center;
+            border: 5px solid #ccc;
+            margin: 25px;
+            padding: 20px;
+        }
+        .app .column h1{
+            margin: 10px 0;
+        }
+        .app .column .tasks ul li{
+            list-style-type: none;
+            padding: 6px;
+            margin: 6px;
+        }
+        .app .column .tasks ul li button{
+            margin: 6px;
+            padding: 6px;
+            border-radius: 100px;
+            width: 30px;
+            height: 30px;
+            font-weight: bold;
+        }
+    </style>
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+</head>
+<body>
+    <!-- this is the container -->
+    <div id="container"></div>
+
+    <script type="text/babel">
+       
+        class KANBAN extends React.Component {
+            constructor(props){
+                super(props);
+                this.state = {
+                    columns:[
+                        {
+                            name: 'Ready For Dev',
+                            tasks: [
+                                {task: 'task one'},
+                                {task: 'task two'},
+                            ]
+                        },
+                        {
+                            name: 'In Dev',
+                            tasks: [
+                                {task: 'task three'},
+                                {task: 'task four'},
+                            ]
+                        },
+                        {
+                            name: 'Ready For ShowCase',
+                            tasks: [
+                                {task: 'task five'},
+                                {task: 'task six'},
+                            ]
+                        }
+                    ]
+                }
+            }
+            handleMoveTasks = (columnIndex, taskIndex, direction) => {
+                const dir = (direction === 'left') ? columnIndex-1 : columnIndex+1;
+                const columns = this.state.columns;
+                const getTask = columns[columnIndex].tasks.splice(taskIndex, 1);
+                
+                columns[dir].tasks.push(getTask[0]);
+                this.setState({'columns': columns});
+            }
+            render(){
+                return(
+                    <div className="app">
+                        {this.state.columns.map((column, index) => (
+                            <Columns column={column} columnIndex={index} key={index} eligibleForLeftMove={index !== 0} eligibleForRightMove={index !== this.state.columns.length-1} moveTasks={this.handleMoveTasks} />
+                        ))}
+                    </div>
+                )
+            }
+        }
+
+
+        // column UI Component
+        function Columns({column, columnIndex, eligibleForLeftMove, eligibleForRightMove, moveTasks}){
+                return(
+                    <div className="column">
+                        <h1>{column.name}</h1>
+                        <Task columnTasks={column.tasks} columnIndex={columnIndex} elm={eligibleForLeftMove} erm={eligibleForRightMove}  moveTasks={moveTasks}/>
+                    </div>
+                )            
+        }
+    
+        // Task UI Component
+        function Task({columnTasks, columnIndex, elm, erm, moveTasks}){
+            return(
+                <div className="tasks">
+                    <ul>
+                        {columnTasks.map((task, taskIndex)=>(
+                            <li key={taskIndex}>
+                                {elm && <button onClick={()=>{ moveTasks (columnIndex, taskIndex, 'left') } }>{'<'}</button>}
+                                {task.task}
+                                {erm && <button onClick={()=>{ moveTasks (columnIndex, taskIndex, 'right') }}>{'>'}</button>}
+                            </li>
+                        ))}
+                    </ul>
+                    
+                </div>
+            )
+        }
+
+        ReactDOM.render(<KANBAN/>, document.getElementById('container'));
+
+    </script>
+</body>
+</html>
