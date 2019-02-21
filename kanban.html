@@ -39,19 +39,30 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(255, 255, 255, 0.8);
             top: 0;
             left: 0;
             
         }
         .modal-overlay .add-task-modal {
             position: absolute;
-            width: 200px;
-            height: 200px;
+            width: 500px;
+            height: 300px;
             background: #fff;
             top: 50%;
             left: 50%;
+            padding: 20px;
+            margin-left: -250px;
+            margin-top: -150px;
+            border: 6px solid #ccc;
         }
+        .closeBtn {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            cursor: pointer;
+        }
+       
     </style>
 
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -119,11 +130,12 @@
                 this.setState({'isModalOpen': false});
             }
             addNewTask = (inputRef)=>{
-                
                 const val = inputRef.current.value;
-                const columns = this.state.columns;
-                columns[this.state.currentAddColumnIndex].tasks.push({task: val});
-                this.setState({'columns': columns, 'isModalOpen': false});
+                if(val){
+                    const columns = this.state.columns;
+                    columns[this.state.currentAddColumnIndex].tasks.push({task: val});
+                    this.setState({'columns': columns, 'isModalOpen': false});
+                }
             }
             render(){
                 const addTaskModal = this.state.isModalOpen ? <AddTask closeModal={this.closeModal} addNewTask={this.addNewTask}/> : null;
@@ -168,7 +180,6 @@
                             </li>
                         ))}
                     </ul>
-                    
                 </div>
             )
         }
@@ -181,7 +192,7 @@
             return(
                 <div className="modal-overlay">
                     <div className="add-task-modal">
-                        <span onClick={closeModal}>close</span>
+                        <span onClick={closeModal} className="closeBtn">close</span>
                     <input ref={inputRef} type="text"/>
                     <button onClick={()=>addNewTask(inputRef)}>Add</button>
                     </div>  
@@ -190,7 +201,7 @@
         }
 
         ReactDOM.render(<KANBAN/>, document.getElementById('container'));
-        
+
     </script>
 </body>
 </html>
